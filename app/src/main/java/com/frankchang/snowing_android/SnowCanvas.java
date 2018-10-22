@@ -20,7 +20,7 @@ public class SnowCanvas extends View {
     private List<Snow> snows;
     private Random random = new Random();
     // 變數
-    private int snowCount = 50;
+    private int snowCount = 100;
 
 
     public SnowCanvas(Context context, @Nullable AttributeSet attrs) {
@@ -28,6 +28,25 @@ public class SnowCanvas extends View {
 
         // 設定 View 的背景色
         setBackgroundColor(Color.BLACK);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        int width = MeasureSpec.getSize(widthMeasureSpec);      // 畫布寬
+        int height = MeasureSpec.getSize(heightMeasureSpec);    // 畫布高
+
+        snows = new ArrayList<>();
+        for (int i = 0; i < snowCount; i++) {
+            // 亂數取得坐標值
+            int x = random.nextInt(width);
+            int y = random.nextInt(height);
+            // 產生雪
+            Snow snow = new Snow(x, y, this, height);
+            snows.add(snow);
+            snow.start();
+        }
     }
 
     @Override
@@ -39,26 +58,11 @@ public class SnowCanvas extends View {
             paint = new Paint();
         }
         paint.setColor(Color.WHITE);    // 畫筆的顏色
-        paint.setTextSize(60f);         // 畫筆的大小
         // 依雪的數量畫出來
         for (Snow snow : snows) {
-            canvas.drawText("雪", snow.getX(), snow.getY(), paint);
-        }
-
-    }
-
-    public void initData() {
-        float width = getWidth();       // 取得畫布寬
-        float height = getHeight();     // 取得畫布高
-
-        snows = new ArrayList<>();
-        for (int i = 0; i < snowCount; i++) {
-            // 亂數取得坐標值
-            int x = random.nextInt((int) width);
-            int y = random.nextInt((int) height);
-            // 產生雪
-            Snow snow = new Snow(x, y);
-            snows.add(snow);
+            canvas.drawOval(snow.getX(), snow.getY(), snow.getX() + snow.getAddNumber(),
+                    snow.getY() + snow.getAddNumber(), paint);
         }
     }
+
 }
